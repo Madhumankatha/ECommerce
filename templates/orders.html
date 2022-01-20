@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Orders{% endblock %}
+
+{% block content  %}
+<!-- Added your content -->
+<div class="container">
+
+    <h5 class="text-center my-3">My Orders</h5>
+
+    {% if orders|length > 0 %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Plant Name</th>
+            <th scope="col">Qty</th>
+            <th scope="col">Total Price</th>
+            <th scope="col">Status</th>
+            <th scope="col">Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order in orders %}
+        <tr>
+            <th scope="row">{{order.oid}}</th>
+            <td>{{order.name}}</td>
+            <td>{{order.qty}}</td>
+            <td>{{order.qty | int * order.price | int}}</td>
+            <td>{{order.status}}</td>
+            <td>{{order.date}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+    <h5 class="text-center">No Orders found from your account!!</h5>
+    {% endif %}
+</div>
+
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    <!-- Added your Javascript code -->
+</script>
+{% endblock %}

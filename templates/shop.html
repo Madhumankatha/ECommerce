@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Shop{% endblock %}
+
+{% block content  %}
+    <!-- Added your content -->
+<div class="container">
+    <h5 class="text-center">Products</h5>
+
+    <div class="row">
+    {% for plant in plants %}
+        <div class="col-md-4 my-2">
+            <div class="card">
+                <img src="{{ plant.image }}" height="250" />
+
+                <div class="mx-2">
+                <h5>Name: {{ plant.name }}</h5>
+                <p>Tags: {{ plant.tags }}</p>
+                <p>Category: {{ plant.category }}</p>
+                <p>Price: {{ plant.price }}</p>
+                </div>
+                <a href="details/{{ plant.id }}" class="btn btn-info">More Details</a>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    <!-- Added your Javascript code -->
+</script>
+{% endblock %}

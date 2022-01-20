@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Details{% endblock %}
+
+{% block content  %}
+    <!-- Added your content -->
+<div class="container">
+<h5 class="text-center my-5">{{ description.name }}</h5>
+
+<div class="row my-2">
+    <div class="col-md-6">
+        <img src="{{description.image}}" height="400">
+    </div>
+    <div class="col-md-6">
+        <h5>{{description.name}}</h5>
+        <h3> ₹. {{description.price}} </h3>
+        <p>tags: {{description.tags}}</p>
+        <p>Category: {{description.category}}</p>
+        <p>{{description.details}}</p>
+        <form action="/addtocart" method="get">
+            <input name="pid" value="{{description.id}}" hidden>
+            <label for="qty">Select Quantity:</label>
+            <select id="qty" class="form-select my-3" name="qty" aria-label="Default select example">
+              <option value="1" selected>One</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+              <option value="4">Four</option>
+              <option value="5">five</option>
+            </select>
+
+
+            <button class="btn btn-success" type="submit">Add To Cart</button>
+        </form>
+        <!--<a href="addToCart/{{description.id}}" class="btn btn-success">Add To Cart</a>-->
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    <!-- Added your Javascript code -->
+</script>
+{% endblock %}
