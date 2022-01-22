@@ -1,4 +1,6 @@
+from ast import For
 from datetime import datetime
+from turtle import st
 from fastapi import FastAPI, Request, Cookie
 from fastapi.params import Form
 from fastapi.responses import HTMLResponse
@@ -24,6 +26,9 @@ app.add_middleware(SessionMiddleware, secret_key='MyApp')
 # configuring the HTML pages
 templates = Jinja2Templates(directory="templates")
 
+#constant name for DATABASE_NAME
+DATABASE_NAME = "app.db"
+
 
 # declaring urls
 @app.get("/", response_class=HTMLResponse)
@@ -43,7 +48,7 @@ def index(request: Request):
 
 @app.get("/shop", response_class=HTMLResponse)
 def shop(request: Request):
-    con = sqlite3.connect("app.db")
+    con = sqlite3.connect(DATABASE_NAME)
     con.row_factory = sqlite3.Row
     cur = con.cursor()
     cur.execute("select * from products")
@@ -57,7 +62,7 @@ def detail(request: Request, pid: int):
     if not request.session.get('isLogin'):
         return RedirectResponse('/login', status_code=status.HTTP_302_FOUND)
 
-    con = sqlite3.connect("app.db")
+    con = sqlite3.connect(DATABASE_NAME)
     con.row_factory = sqlite3.Row
     cur = con.cursor()
     cur.execute("select * from products where id =?", [pid])
@@ -75,7 +80,7 @@ def register(request: Request):
 @app.post("/register", response_class=HTMLResponse)
 def do_register(request: Request, username: str = Form(...), password: str = Form(...), email: str = Form(...),
                 address: str = Form(...), phone: str = Form(...)):
-    with sqlite3.connect("app.db") as con:
+    with sqlite3.connect(DATABASE_NAME) as con:
         cur = con.cursor()
         cur.execute("INSERT into users(username, password, email, address, phone) values(?,?,?,?,?)",
                     (username, password, email, address, phone))
@@ -90,7 +95,7 @@ def login(request: Request):
 
 @app.post("/login", response_class=HTMLResponse)
 def do_login(request: Request, response: Response, username: str = Form(...), password: str = Form(...)):
-    con = sqlite3.connect("app.db")
+    con = sqlite3.connect(DATABASE_NAME)
     con.row_factory = sqlite3.Row
     cur = con.cursor()
     cur.execute("select * from users where username =? and password=?", [username, password])
@@ -107,7 +112,7 @@ def do_login(request: Request, response: Response, username: str = Form(...), pa
 @app.get("/addtocart", response_class=HTMLResponse)
 async def addtocart(request: Request, pid:int = 1, qty:int = 1):
     uid = request.session.get('uid')
-    with sqlite3.connect("app.db", check_same_thread=False) as con:
+    with sqlite3.connect(DATABASE_NAME, check_same_thread=False) as con:
         cur = con.cursor()
         cur.execute("INSERT into carts(pid, qty, uid) values(?,?,?)",
                     (pid, qty, uid))
@@ -122,7 +127,7 @@ def cart(request: Request):
 
     uid = request.session.get('uid')
 
-    con = sqlite3.connect("app.db")
+    con = sqlite3.connect(DATABASE_NAME)
     con.row_factory = sqlite3.Row
     cur = con.cursor()
     cur.execute("SELECT *,c.id as cid from USERS u,carts c, products p where u.id=c.uid and c.pid=p.id and c.uid =?", [uid])
@@ -133,7 +138,7 @@ def cart(request: Request):
 
 @app.get("/deletecart/{cid}", response_class=HTMLResponse)
 def delete_cart_item(request: Request, cid: int):
-    con = sqlite3.connect("app.db")
+    con = sqlite3.connect(DATABASE_NAME)
     con.row_factory = sqlite3.Row
     cur = con.cursor()
     cur.execute("Delete from carts where id =?", [cid])
@@ -151,7 +156,7 @@ def logout(request: Request):
 @app.get("/confrim", response_class=HTMLResponse)
 def confrim(request: Request):
     uid = request.session.get('uid')
-    with sqlite3.connect("app.db", check_same_thread=False) as con:
+    with sqlite3.connect(DATABASE_NAME, check_same_thread=False) as con:
         cur = con.cursor()
 
         cur.execute("SELECT * from carts where uid = ? ",[uid])
@@ -175,7 +180,7 @@ def orders(request : Request):
 
     uid = request.session.get('uid')
 
-    con = sqlite3.connect("app.db")
+    con = sqlite3.connect(DATABASE_NAME)
     con.row_factory = sqlite3.Row
     cur = con.cursor()
     cur.execute("SELECT *,o.id as oid from USERS u,orders o, products p where u.id=o.uid and o.pid=p.id and o.uid =?",
@@ -192,7 +197,7 @@ def admin_index(request: Request):
 
 @app.post("/admin/", response_class=HTMLResponse)
 def admin_index(request: Request, username: str = Form(...), password: str = Form(...)):
-    con = sqlite3.connect("app.db")
+    con = sqlite3.connect(DATABASE_NAME)
     con.row_factory = sqlite3.Row
     cur = con.cursor()
     cur.execute("select * from admin where username =? and password=?", [username, password])
@@ -214,12 +219,39 @@ def dashboard(request: Request):
 
 @app.get("/admin/products", response_class=HTMLResponse)
 def admin_products(request: Request):
-    return templates.TemplateResponse("/admin/products.html", {"request": request})
+    con = sqlite3.connect(DATABASE_NAME)
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute("select * from products")
+    products = cur.fetchall()
+    con.close
+    return templates.TemplateResponse("/admin/products.html", {"request": request, "products": products})
+
+
+@app.get("/admin/products/create", response_class=HTMLResponse)
+def admin_products_create(request: Request):
+    return templates.TemplateResponse("/admin/products_create.html", {"request": request})
+
+
+@app.post("/admin/products/create", response_class=HTMLResponse)
+def admin_products_create(request: Request, pname:str = Form(...), price: str = Form(...), image: str = Form(...), details: str = Form(...), tags: str = Form(...), category:str = Form(...)):
+    with sqlite3.connect(DATABASE_NAME) as con:
+        cur = con.cursor()
+        cur.execute("INSERT into products(name, price, details, image, tags, category) values(?, ?, ?, ?, ?, ?)",
+                    (pname, price, details, image, tags, category))
+        con.commit()
+    return RedirectResponse("/admin/products",status_code=status.HTTP_302_FOUND)
 
 
 @app.get("/admin/orders", response_class=HTMLResponse)
 def admin_orders(request: Request):
-    return templates.TemplateResponse("/admin/orders.html", {"request": request})
+    con = sqlite3.connect(DATABASE_NAME)
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute("SELECT *, o.id as oid from users u, products p, orders o where o.uid = u.id and o.pid = p.id")
+    orders = cur.fetchall()
+    con.close
+    return templates.TemplateResponse("/admin/orders.html", {"request": request, "orders": orders})
 
 
 @app.get("/admin/logout", response_class=HTMLResponse)

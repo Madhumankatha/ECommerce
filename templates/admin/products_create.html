@@ -5,6 +5,76 @@
 <div class="container">
     <!-- Added your content -->
     <h5 class="text-center">PRODUCTS CREATE</h5>
+
+    <form class="my-3" method="POST" action="/admin/products/create">
+
+        <div class="row">
+              <div class="col-md-3"></div>
+
+              <div class="col-md-6">
+
+                  <div class="card" >
+
+                      <div class="card-body">
+                          <h5 class="card-title text-center">Products</h5>
+                          <p class="card-text text-center">Please Enter the Products details.</p>
+
+                          <label for="pname" class="form-label">Enter Product Name :</label>
+                          <div class="input-group mb-3">
+                              <span class="input-group-text" id="pname">@</span>
+                              <input type="text" id="pname" name="pname" class="form-control" placeholder="Product name"
+                                  aria-label="pname" aria-describedby="basic-addon1" required>
+                          </div>
+
+                          <label for="price" class="form-label">Enter Product Price :</label>
+                          <div class="input-group mb-3">
+                              <span class="input-group-text" id="price">@</span>
+                              <input type="text" id="price" name="price" class="form-control" placeholder="Product price"
+                                  aria-label="price" aria-describedby="basic-addon1" required>
+                          </div>
+
+                          <label for="image" class="form-label">Enter Product Image :</label>
+                          <div class="input-group mb-3">
+                              <span class="input-group-text" id="image">@</span>
+                              <input type="text" id="image" name="image" class="form-control" placeholder="Product image"
+                                  aria-label="image" aria-describedby="basic-addon1" required>
+                          </div>
+
+                          <label for="details" class="form-label">Enter Product details :</label>
+                          <div class="input-group mb-3">
+                              <span class="input-group-text" id="details">@</span>
+                              <input type="text" id="details" name="details" class="form-control" placeholder="Product details"
+                                  aria-label="details" aria-describedby="basic-addon1" required>
+                          </div>
+
+                          <label for="tags" class="form-label">Enter Product tags :</label>
+                          <div class="input-group mb-3">
+                              <span class="input-group-text" id="tags">@</span>
+                              <input type="text" id="tags" name="tags" class="form-control" placeholder="Product tags"
+                                  aria-label="tags" aria-describedby="basic-addon1" required>
+                          </div>
+
+                          <label for="category" class="form-label">Enter Product category :</label>
+                          <div class="input-group mb-3">
+                              <select id="category" class="form-select my-3" name="category" aria-label="Default select example">
+                                <option value="Plants" selected>Plants</option>
+                                <option value="Fertilizers">Fertilizers</option>
+                                <option value="Soil">Soil</option>
+                              </select>
+                          </div>
+
+                          <h5 class="text-danger">{{msg}}</h5>
+                          <button class="btn btn-success" type="submit">SUBMIT</button>
+                          <button class="btn btn-danger" type="reset">CLEAR</button>
+                          
+                      </div>
+                  </div>
+
+              </div>
+
+   </form>
+
+
 </div>
 {% endblock %}
 
