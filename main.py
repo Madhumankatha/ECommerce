@@ -277,3 +277,24 @@ def admin_orders(request: Request):
 @app.get("/admin/orders_view/{oid}", response_class=HTMLResponse)
 def admin_order_view(request: Request, oid: int = 0):
     return templates.TemplateResponse("/admin/orders_view.html", {"request": request})
+
+
+@app.get("/products", response_class=HTMLResponse)
+def products(request: Request):
+    con = sqlite3.connect("app.db")
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute("select * from products")
+    products = cur.fetchall()
+    con.close
+    return templates.TemplateResponse("/products.html", {"request" : request, "products": products })  
+
+@app.get("/view/{pid}", response_class=HTMLResponse)
+def view(request: Request, pid: int = 0): 
+    con = sqlite3.connect("app.db")
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute("select * from products where id =?", [pid])
+    product = cur.fetchall()
+    con.close
+    return templates.TemplateResponse("/view.html", {"request": request, "product": product[0]}) 
